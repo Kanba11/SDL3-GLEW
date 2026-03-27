@@ -17,7 +17,7 @@ int main()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     // Create Window（800x800）
-    SDL_Window* window = SDL_CreateWindow("YoutubeOpenGL", 800, 800, SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("Window", 800, 800, SDL_WINDOW_OPENGL);
 
     // OpenGL context creation
     SDL_GLContext context = SDL_GL_CreateContext(window);
@@ -25,7 +25,7 @@ int main()
     // GLEW Initialization 
     glewExperimental = GL_TRUE;
     GLenum glewErr = glewInit();
-   
+    
     // Viewport Settings
     glViewport(0, 0, 800, 800);
 
