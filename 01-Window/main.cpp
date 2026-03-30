@@ -12,6 +12,7 @@ const unsigned int SCR_HEIGHT = 600;
 
 int main(int argc, char* argv[])
 {
+
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    // Loop control variable
     bool window_loop = true;
     SDL_Event event;
 
@@ -78,11 +80,12 @@ int main(int argc, char* argv[])
     // GPU information
     std::cout << "GL_VENDOR: " << (const char*)glGetString(GL_VENDOR) << "\n";
     std::cout << "GL_RENDERER: " << (const char*)glGetString(GL_RENDERER) << "\n";
-    std::cout << "GL_VERSION: " << (const char*)glGetString(GL_VERSION) << "\n";    
+    std::cout << "GL_VERSION: " << (const char*)glGetString(GL_VERSION) << "\n";
 
     // Termination process
     std::cout << "Cleaning up..." << std::endl;
     
+    // Shut down SDL
     SDL_GL_DestroyContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();
