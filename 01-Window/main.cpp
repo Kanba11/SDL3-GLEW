@@ -75,6 +75,11 @@ int main(int argc, char* argv[])
         SDL_GL_SwapWindow(window);
     }
     
+    // GPU information
+    std::cout << "GL_VENDOR: " << (const char*)glGetString(GL_VENDOR) << "\n";
+    std::cout << "GL_RENDERER: " << (const char*)glGetString(GL_RENDERER) << "\n";
+    std::cout << "GL_VERSION: " << (const char*)glGetString(GL_VERSION) << "\n";    
+
     // Termination process
     std::cout << "Cleaning up..." << std::endl;
     
