@@ -61,6 +61,8 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    // Contorol V-Sync
+    SDL_GL_SetSwapInterval(1);
 
     // Initialize GLEW
     glewExperimental = GL_TRUE;

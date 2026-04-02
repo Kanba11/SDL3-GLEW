@@ -20,7 +20,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.95f, 0.2f, 1.0f);\n"
     "}\n\0";
 
 
@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    // Contorol V-Sync
     SDL_GL_SetSwapInterval(1);
 
     // Initialize GLEW
@@ -90,59 +91,82 @@ int main(int argc, char* argv[])
     // set initial viewport
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
+    // Stores whether shader compile/program link succeeded
     GLint success;
+    // // Buffer to store shader/program error messages (up to 512 chars)    
     char infoLog[512];
 
+    // Create a vertex shader object
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    // Attach vertex shader source code
     glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    // Compile the vertex shader
     glCompileShader(vertexShader);
+    // Check compile status
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
+    // Create a fragment shader object
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    // Attach fragment shader source code
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+    // Compile the fragment shader
     glCompileShader(fragmentShader);
+    // Check compile status
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
+    // Create a shader program object
     GLuint shaderProgram = glCreateProgram();
+    // Attach the vertex and fragment shader to the program
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
+    // Link attached shaders into an executable program
     glLinkProgram(shaderProgram);
+    // Check link status
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    // Delete standalone
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
     // vertex data
     GLfloat vertices[] = {
-        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // left
-         0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // right
+        -0.5f, -1.0f * float(sqrt(3)) / 3, 0.0f, // left
+         0.5f, -1.0f * float(sqrt(3)) / 3, 0.0f, // right
          0.0f,  0.5f * float(sqrt(3)) * 2 / 3, 0.0f  // top
     };
 
+    // Create reference containers for the Vertex Buffer Object and Vertex Array Object
     GLuint VBO, VAO;
+    // Generate VAO and VBO
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
+    // Bind VAO to record vertex attribute settings
     glBindVertexArray(VAO);
 
+    // Bind VBO as the current array buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // Introduce the vertices into the VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);
 
+    // Unbind array buffer and VAO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -153,15 +177,15 @@ int main(int argc, char* argv[])
     std::cout << "GLSL     : " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
 
     // Main loop
-   bool running = true;
-    while (running) {
+   bool window_loop = true;
+    while (window_loop) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
-                running = false;
+                window_loop = false;
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
-                running = false;
+                window_loop = false;
             }
             if (event.type == SDL_EVENT_WINDOW_RESIZED) {
                 glViewport(0, 0, event.window.data1, event.window.data2);
