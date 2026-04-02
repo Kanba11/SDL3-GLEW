@@ -88,12 +88,15 @@ int main(int argc, char* argv[])
         // Event handling
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+            // Window close button
             if (event.type == SDL_EVENT_QUIT) {
                 window_loop = false;
             }
+            // Exit if the Escape key is pressed
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
                 window_loop = false;
             }
+            // Window resizing
             if (event.type == SDL_EVENT_WINDOW_RESIZED) {
                 framebuffer_size_callback(event.window.data1, event.window.data2);
             }
@@ -102,6 +105,7 @@ int main(int argc, char* argv[])
         // Rendering clear
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
     }
     

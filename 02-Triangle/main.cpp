@@ -10,12 +10,14 @@ void processInput(bool* window_loop);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// Vertex Shader
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
+// Fragment Shader
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
@@ -93,7 +95,7 @@ int main(int argc, char* argv[])
 
     // Stores whether shader compile/program link succeeded
     GLint success;
-    // // Buffer to store shader/program error messages (up to 512 chars)    
+    // Buffer to store shader/program error messages (up to 512 chars)    
     char infoLog[512];
 
     // Create a vertex shader object
@@ -178,27 +180,37 @@ int main(int argc, char* argv[])
 
     // Main loop
    bool window_loop = true;
-    while (window_loop) {
+    while (window_loop) 
+    {
+        // Event handling
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+            // Window close button
             if (event.type == SDL_EVENT_QUIT) {
                 window_loop = false;
+            // Exit if the Escape key is pressed
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
                 window_loop = false;
             }
+            // Window resizing
             if (event.type == SDL_EVENT_WINDOW_RESIZED) {
                 glViewport(0, 0, event.window.data1, event.window.data2);
             }
         }
 
+        // Rendering clear
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Activate the shader program
         glUseProgram(shaderProgram);
+        // Bind the VAO so OpenGL knows to use it
         glBindVertexArray(VAO);
+        // Draw the triangle using the GL_TRIANGLES primitive
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
     }
 
