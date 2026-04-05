@@ -144,16 +144,24 @@ int main(int argc, char* argv[])
 
     // vertex data
     GLfloat vertices[] = {
-        -0.5f, -1.0f * float(sqrt(3)) / 3, 0.0f, // left
-         0.5f, -1.0f * float(sqrt(3)) / 3, 0.0f, // right
-         0.0f,  0.5f * float(sqrt(3)) * 2 / 3, 0.0f  // top
+         0.5f,  0.5f, 0.0f, // Upper right
+         0.5f, -0.5f, 0.0f, // Lower right
+        -0.5f, -0.5f, 0.0f, // Lower left
+        -0.5f,  0.5f, 0.0f  // Upper left
     };
 
-    // Create reference containers for the Vertex Buffer Object and the Vertex Array Object
-    GLuint VBO, VAO;
-    // Generate VAO and VBO
+    // Two triangular Index data
+    GLuint indices[] = {
+        0, 1, 3, 
+        1, 2, 3  
+    };
+
+    // Create reference containers e Vartex Array Object, the Vertex Buffer Object, and the Element Buffer Object
+    GLuint VBO, VAO, EBO;
+    // Generate VAO and VBO and EBO
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     // Bind VAO to record vertex attribute settings
     glBindVertexArray(VAO);
@@ -162,6 +170,11 @@ int main(int argc, char* argv[])
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Introduce the vertices into the VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Bind the EBO specifying it's a GL_ELEMENT_ARRAY_BUFFER
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // Introduce the indices into the EBO
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -207,9 +220,8 @@ int main(int argc, char* argv[])
         glUseProgram(shaderProgram);
         // Bind the VAO so OpenGL knows to use it
         glBindVertexArray(VAO);
-        // Draw the triangle using the GL_TRIANGLES primitive
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        // Draw primitives, number of indices, datatype of indices, index of indices
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
     }
@@ -217,6 +229,7 @@ int main(int argc, char* argv[])
     // cleanup
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
 
     // Termination process
