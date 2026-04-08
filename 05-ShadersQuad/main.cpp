@@ -13,16 +13,20 @@ const unsigned int SCR_HEIGHT = 600;
 // Vertex Shader
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "out vec3 vertexColor;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   vertexColor = aColor;\n"
     "}\0";
 // Fragment Shader
 const char *fragmentShaderSource = "#version 330 core\n"
+    "in vec3 vertexColor;\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.95f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(vertexColor, 1.0f);\n"
     "}\n\0";
 
 
@@ -143,17 +147,26 @@ int main(int argc, char* argv[])
     glDeleteShader(fragmentShader);
 
     // Vertex data
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left
-         0.5f, -0.5f, 0.0f, // right
-         0.0f,  0.5f, 0.0f  // top
+    GLfloat vertexData[] = {
+    // Poation (x, y, z)      // Color (r, g, b)
+     0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
+     0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
+    -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
+    -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Upper left (yellow)
+};
+
+    // Two triangular Index data
+    GLuint indices[] = {
+        0, 1, 3, 
+        1, 2, 3  
     };
 
-    // Create reference containers for the Vertex Buffer Object and the Vertex Array Object
-    GLuint VBO, VAO;
-    // Generate VAO and VBO
+    // Create reference containers e Vartex Array Object, the Vertex Buffer Object, and the Element Buffer Object
+    GLuint VBO, VAO, EBO;
+    // Generate VAO and VBO and EBO
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     // Bind VAO to record vertex attribute settings
     glBindVertexArray(VAO);
@@ -161,12 +174,20 @@ int main(int argc, char* argv[])
     // Bind VBO as the current array buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Introduce the vertices into the VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);
+
+    // Color data
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Bind the EBO specifying it's a GL_ELEMENT_ARRAY_BUFFER
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // Introduce the indices into the EBO
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Unbind array buffer and VAO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -207,9 +228,8 @@ int main(int argc, char* argv[])
         glUseProgram(shaderProgram);
         // Bind the VAO so OpenGL knows to use it
         glBindVertexArray(VAO);
-        // Draw the triangle using the GL_TRIANGLES primitive
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        // Draw primitives, number of indices, datatype of indices, index of indices
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
     }
@@ -217,6 +237,7 @@ int main(int argc, char* argv[])
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
 
     // Termination process

@@ -13,16 +13,20 @@ const unsigned int SCR_HEIGHT = 600;
 // Vertex Shader
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "out vec3 vertexColor;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   vertexColor = aColor;\n"
     "}\0";
 // Fragment Shader
 const char *fragmentShaderSource = "#version 330 core\n"
+    "in vec3 vertexColor;\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.95f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(vertexColor, 1.0f);\n"
     "}\n\0";
 
 
@@ -144,22 +148,28 @@ int main(int argc, char* argv[])
 
     // Vertex data
     GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left
-         0.5f, -0.5f, 0.0f, // right
-         0.0f,  0.5f, 0.0f  // top
+        -0.5f, -0.5f, 0.0f, // Left
+         0.5f, -0.5f, 0.0f, // Right
+         0.0f,  0.5f, 0.0f  // Top
+    };
+
+    GLfloat colors[] = {
+        1.0f, 0.0f, 0.0f, // Left (Red)
+        0.0f, 0.0f, 1.0f, // Right (Blue)
+        0.0f, 1.0f, 0.0f  // Top (Green)
     };
 
     // Create reference containers for the Vertex Buffer Object and the Vertex Array Object
-    GLuint VBO, VAO;
+    GLuint VBO[2], VAO;
     // Generate VAO and VBO
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(2, VBO);
 
     // Bind VAO to record vertex attribute settings
     glBindVertexArray(VAO);
 
     // Bind VBO as the current array buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     // Introduce the vertices into the VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -167,6 +177,13 @@ int main(int argc, char* argv[])
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);
+
+    // VBO settings for color data
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    // Link it to the shader's location = 1 (aColor)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
 
     // Unbind array buffer and VAO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -216,7 +233,7 @@ int main(int argc, char* argv[])
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(2, VBO);
     glDeleteProgram(shaderProgram);
 
     // Termination process

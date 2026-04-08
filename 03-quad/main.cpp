@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    // set initial viewport
+    // Set initial viewport
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
     // Stores whether shader compile/program link succeeded
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // vertex data
+    // Vertex data
     GLfloat vertices[] = {
          0.5f,  0.5f, 0.0f, // Upper right
          0.5f, -0.5f, 0.0f, // Lower right
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
         SDL_GL_SwapWindow(window);
     }
 
-    // cleanup
+    // Cleanup
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
