@@ -4,7 +4,6 @@
 
 int main()
 {
-
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
@@ -59,10 +58,9 @@ int main()
     // Set initial viewport
     glViewport(0, 0, 800, 600);
 
-    // Main loop
+    // Window loop
     bool loop = true;
-    while (loop)
-    {
+    while (loop) {
         // Event handling
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -74,8 +72,9 @@ int main()
             if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
         }
 
-        // Rendering clear
+        // Specify background color
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        // Clean the back buffer and assign a new color
         glClear(GL_COLOR_BUFFER_BIT);
         // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);

@@ -23,7 +23,6 @@ const char *fragmentShaderSource = "#version 330 core\n"
 
 int main()
 {
-
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
@@ -94,6 +93,7 @@ int main()
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
     // Create a fragment shader object
@@ -107,6 +107,7 @@ int main()
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
     // Create a shader program object
@@ -121,13 +122,14 @@ int main()
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
-    // Delete standalone
+    // Delete shader objects after linking
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Vertex data
+    // Vertex and RGB data 
     GLfloat vertexData[] = {
     // Position (x, y, z)      // Color (r, g, b)
      0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
@@ -136,13 +138,13 @@ int main()
     -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Upper left (yellow)
 };
 
-    // Two triangular Index data
+    // Index data for two triangles
     GLuint indices[] = {
         0, 1, 3, 
         1, 2, 3  
     };
 
-    // Create reference containers e Vartex Array Object, the Vertex Buffer Object, and the Element Buffer Object
+    // Create VAO, VBO, and EBO handles
     GLuint VBO, VAO, EBO;
     // Generate VAO and VBO and EBO
     glGenVertexArrays(1, &VAO);
@@ -154,30 +156,29 @@ int main()
 
     // Bind VBO as the current array buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // Introduce the vertices into the VBO
+    // Upload vertex data to VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
      // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);
 
-    // Color data
+    // Configure vertex color attribute (location = 1)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // Bind the EBO specifying it's a GL_ELEMENT_ARRAY_BUFFER
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // Introduce the indices into the EBO
+    // Upload vertex data to EBO
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Unbind array buffer and VAO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Main loop
+    // Window loop
     bool loop = true;
-    while (loop)
-    {
+    while (loop) {
         // Event handling
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -189,9 +190,9 @@ int main()
             if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
         }
 
-
-         // Rendering clear
+        // Specify background color
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        // Clean the back buffer and assign a new color
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Activate the shader program
@@ -204,7 +205,7 @@ int main()
         SDL_GL_SwapWindow(window);
     }
 
-    // Cleanup
+    // Release resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);

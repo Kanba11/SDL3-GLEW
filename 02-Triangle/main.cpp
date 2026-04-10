@@ -19,7 +19,6 @@ const char *fragmentShaderSource = "#version 330 core\n"
 
 int main(int argc, char* argv[])
 {
-
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
@@ -90,6 +89,7 @@ int main(int argc, char* argv[])
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
     // Create a fragment shader object
@@ -103,6 +103,7 @@ int main(int argc, char* argv[])
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
     // Create a shader program object
@@ -117,20 +118,21 @@ int main(int argc, char* argv[])
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        return -1;
     }
 
-    // Delete standalone
+    // Delete shader objects after linking
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Vertex data
+    // Vertices coordinates
     GLfloat vertices[] = {
         -0.5f, -0.5f, 0.0f, // left
          0.5f, -0.5f, 0.0f, // right
          0.0f,  0.5f, 0.0f  // top
     };
 
-    // Create reference containers for the Vertex Buffer Object and the Vertex Array Object
+    // Create VAO, VBO
     GLuint VBO, VAO;
     // Generate VAO and VBO
     glGenVertexArrays(1, &VAO);
@@ -141,7 +143,7 @@ int main(int argc, char* argv[])
 
     // Bind VBO as the current array buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // Introduce the vertices into the VBO
+    // Upload vertex data to VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
@@ -153,10 +155,9 @@ int main(int argc, char* argv[])
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Main loop
+    // Window loop
      bool loop = true;
-    while (loop)
-    {
+    while (loop) {
         // Event handling
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -167,8 +168,9 @@ int main(int argc, char* argv[])
             // Window resizing
             if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
         }
-        // Rendering clear
+        // Specify background color
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        // Clean the back buffer and assign a new color
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Activate the shader program
@@ -182,7 +184,7 @@ int main(int argc, char* argv[])
         SDL_GL_SwapWindow(window);
     }
 
-    // Cleanup
+    // Release resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
