@@ -17,7 +17,6 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(1.0f, 0.95f, 0.2f, 1.0f);\n"
     "}\n\0";
 
-
 int main(int argc, char* argv[])
 {
 
@@ -71,7 +70,6 @@ int main(int argc, char* argv[])
         SDL_Quit();
         return -1;
     }
-
 
     // Set initial viewport
     glViewport(0, 0, 800, 600);

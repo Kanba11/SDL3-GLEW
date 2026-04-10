@@ -21,7 +21,6 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(vertexColor, 1.0f);\n"
     "}\n\0";
 
-
 int main()
 {
 
@@ -75,7 +74,6 @@ int main()
         SDL_Quit();
         return -1;
     }
-
 
     // Set initial viewport
     glViewport(0, 0, 800, 600);
@@ -131,7 +129,7 @@ int main()
 
     // Vertex data
     GLfloat vertexData[] = {
-    // Poation (x, y, z)      // Color (r, g, b)
+    // Position (x, y, z)      // Color (r, g, b)
      0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
      0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
     -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
