@@ -7,14 +7,7 @@
 #include "VBO.h"
 #include "EBO.h"
 
-// Forward Declarations
-void framebuffer_size_callback(int width, int height);
-void processInput(bool* window_loop); 
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-int main(int argc, char* argv[]) {
+int main() {
 
     if (!SDL_Init(SDL_INIT_VIDEO)) return -1;
     
@@ -22,7 +15,7 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    SDL_Window* window = SDL_CreateWindow("Triangle", SCR_WIDTH, SCR_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Organizing", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, glContext);
 
@@ -87,19 +80,4 @@ int main(int argc, char* argv[]) {
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
-}
-
-// Input processing
-void processInput(bool* window_loop)
-{
-    const bool* state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_ESCAPE]) {
-        *window_loop = false;
-    }
-}
-
-// Window Resize Logic
-void framebuffer_size_callback(int width, int height)
-{
-    glViewport(0, 0, width, height);
 }

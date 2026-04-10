@@ -2,14 +2,6 @@
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
 
-// Forward Declarations
-void framebuffer_size_callback(int width, int height);
-void processInput(bool* window_loop); 
-
-// Global constants for the initial window dimensions
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
 // Vertex Shader
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -30,12 +22,12 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "}\n\0";
 
 
-int main(int argc, char* argv[])
+int main()
 {
 
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-        std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
         return -1;
     }
 
@@ -43,22 +35,15 @@ int main(int argc, char* argv[])
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
 // OpenGL context for macOS
 #ifdef __APPLE__
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow(
-        "Triangle",
-        SCR_WIDTH, 
-        SCR_HEIGHT, 
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-    );
-
+    SDL_Window* window = SDL_CreateWindow("Shaders", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
-        std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
         return -1;
     }
@@ -66,7 +51,7 @@ int main(int argc, char* argv[])
     // Create a context
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
     if (!glContext) {
-        std::cout << "OpenGL context could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cerr << "OpenGL context could not be created! SDL_Error: " << SDL_GetError() << "\n";
         SDL_DestroyWindow(window);
         SDL_Quit();
         return -1;
@@ -74,28 +59,26 @@ int main(int argc, char* argv[])
 
     // Drawing context
     if (!SDL_GL_MakeCurrent(window, glContext)) {
-        std::cerr << "Failed to make context current: " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to make context current: " << SDL_GetError() << "\n";
         SDL_GL_DestroyContext(glContext);
         SDL_DestroyWindow(window);
         SDL_Quit();
         return -1;
     }
-
-    // Contorol V-Sync
-    SDL_GL_SetSwapInterval(1);
 
     // Initialize GLEW
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
+        std::cerr << "Failed to initialize GLEW\n";
         SDL_GL_DestroyContext(glContext);
         SDL_DestroyWindow(window);
         SDL_Quit();
         return -1;
     }
 
+
     // Set initial viewport
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    glViewport(0, 0, 800, 600);
 
     // Stores whether shader compile/program link succeeded
     GLint success;
@@ -147,76 +130,69 @@ int main(int argc, char* argv[])
     glDeleteShader(fragmentShader);
 
     // Vertex data
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f, // Left
-         0.5f, -0.5f, 0.0f, // Right
-         0.0f,  0.5f, 0.0f  // Top
+    GLfloat vertexData[] = {
+    // Poation (x, y, z)      // Color (r, g, b)
+     0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
+     0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
+    -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
+    -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Upper left (yellow)
+};
+
+    // Two triangular Index data
+    GLuint indices[] = {
+        0, 1, 3, 
+        1, 2, 3  
     };
 
-    GLfloat colors[] = {
-        1.0f, 0.0f, 0.0f, // Left (Red)
-        0.0f, 0.0f, 1.0f, // Right (Blue)
-        0.0f, 1.0f, 0.0f  // Top (Green)
-    };
-
-    // Create reference containers for the Vertex Buffer Object and the Vertex Array Object
-    GLuint VBO[2], VAO;
-    // Generate VAO and VBO
+    // Create reference containers e Vartex Array Object, the Vertex Buffer Object, and the Element Buffer Object
+    GLuint VBO, VAO, EBO;
+    // Generate VAO and VBO and EBO
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(2, VBO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     // Bind VAO to record vertex attribute settings
     glBindVertexArray(VAO);
 
     // Bind VBO as the current array buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Introduce the vertices into the VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);
 
-    // VBO settings for color data
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    // Link it to the shader's location = 1 (aColor)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Color data
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Bind the EBO specifying it's a GL_ELEMENT_ARRAY_BUFFER
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // Introduce the indices into the EBO
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Unbind array buffer and VAO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // GPU information
-    std::cout << "GL_VENDOR: " << (const char*)glGetString(GL_VENDOR) << "\n";
-    std::cout << "GL_RENDERER: " << (const char*)glGetString(GL_RENDERER) << "\n";
-    std::cout << "GL_VERSION: " << (const char*)glGetString(GL_VERSION) << "\n";
-    std::cout << "GLSL     : " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-
     // Main loop
-   bool window_loop = true;
-    while (window_loop) 
+    bool loop = true;
+    while (loop)
     {
         // Event handling
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
             // Window close button
-            if (event.type == SDL_EVENT_QUIT) {
-                window_loop = false;
+            if (e.type == SDL_EVENT_QUIT) loop = false;
             // Exit if the Escape key is pressed
-            }
-            if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
-                window_loop = false;
-            }
+            if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE) loop = false;
             // Window resizing
-            if (event.type == SDL_EVENT_WINDOW_RESIZED) {
-                glViewport(0, 0, event.window.data1, event.window.data2);
-            }
+            if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
         }
 
-        // Rendering clear
+
+         // Rendering clear
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -224,40 +200,22 @@ int main(int argc, char* argv[])
         glUseProgram(shaderProgram);
         // Bind the VAO so OpenGL knows to use it
         glBindVertexArray(VAO);
-        // Draw the triangle using the GL_TRIANGLES primitive
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        // Draw primitives, number of indices, datatype of indices, index of indices
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
     }
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(2, VBO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
 
-    // Termination process
-    std::cout << "SDL shutdown ..." << std::endl;
-    
     // SDL Shutdown
     SDL_GL_DestroyContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
     return 0;
-}
-
-// Input processing
-void processInput(bool* window_loop)
-{
-    const bool* state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_ESCAPE]) {
-        *window_loop = false;
-    }
-}
-
-// Window Resize Logic
-void framebuffer_size_callback(int width, int height)
-{
-    glViewport(0, 0, width, height);
 }
