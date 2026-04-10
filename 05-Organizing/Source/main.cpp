@@ -9,7 +9,7 @@
 
     // Vertex and RGB data
     GLfloat vertexData[] = {
-    // Position (x, y, z)      // Color (r, g, b)
+    // Position (x, y, z)   // Color (r, g, b)
      0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
      0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
     -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
@@ -21,7 +21,6 @@
         0, 1, 3, 
         1, 2, 3 
     };
-
 
 int main() {
 

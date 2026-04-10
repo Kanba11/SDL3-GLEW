@@ -2,8 +2,7 @@
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
 
-int main()
-{
+int main() {
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';

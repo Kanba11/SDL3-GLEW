@@ -21,8 +21,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(vertexColor, 1.0f);\n"
     "}\n\0";
 
-int main()
-{
+int main() {
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
@@ -131,7 +130,7 @@ int main()
 
     // Vertex and RGB data 
     GLfloat vertexData[] = {
-    // Position (x, y, z)      // Color (r, g, b)
+    // Position (x, y, z)   // Color (r, g, b)
      0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
      0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
     -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
@@ -158,7 +157,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Upload vertex data to VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
+    // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     // Enable the Vertex Attribute so that OpenGL knows to use it
     glEnableVertexAttribArray(0);

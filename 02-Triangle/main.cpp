@@ -17,8 +17,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(1.0f, 0.95f, 0.2f, 1.0f);\n"
     "}\n\0";
 
-int main(int argc, char* argv[])
-{
+int main() {
     // Initialize SDL
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
