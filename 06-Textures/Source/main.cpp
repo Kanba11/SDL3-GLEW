@@ -1,27 +1,30 @@
+#include<filesystem>
+namespace fs = std::filesystem;
+
 #include <iostream>
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
 
+#include "Texture.h"
 #include "shaderClass.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
 
-    // Vertex and RGB data 
+    // Vertex and RGB data
     GLfloat vertexData[] = {
     // Position (x, y, z)   // Color (r, g, b)
-        -0.5f,  -0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Lower left
-        -0.5f,   0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Upper left
-         0.5f,   0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Upper right
-         0.5f,  -0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Lower right
+     -0.5f,  -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,  0.0f, 0.0f, // Lower left
+     -0.5f,   0.5f, 0.0f,    0.0f, 1.0f, 0.0f,  0.0f, 1.0f, // Upper left
+      0.5f,   0.5f, 0.0f,    0.0f, 0.0f, 1.0f,  1.0f, 1.0f, // Upper right
+      0.5f,  -0.5f, 0.0f,    1.0f, 1.0f, 0.0f,  1.0f, 0.0f  // Lower right
     };
 
     // Index data for two triangles
     GLuint indices[] = {
-        0, 1, 3, 
-        1, 2, 3  
+        0, 2, 1, 
+        0, 3, 2 
     };
-
 
 int main() {
 
@@ -83,24 +86,38 @@ int main() {
     Shader shaderProgram("Shaders/default.vert", "Shaders/default.frag");
 
     // Generates VAO and binds it
-    VAO vao1;
-    vao1.Bind();
+    VAO VAO1;
+    VAO1.Bind();
 
     // Generates VBO and links it to vertices
-    VBO vbo1(vertexData, sizeof(vertexData));
+    VBO VBO1(vertexData, sizeof(vertexData));
     // Generates EBO and links it to indices
-    EBO ebo1(indices, sizeof(indices));
+    EBO EBO1(indices, sizeof(indices));
 
     
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    vao1.LinkAttrib(vbo1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
     // Configure vertex color attribute (location = 1)
-    vao1.LinkAttrib(vbo1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
     // Unbind all to prevent accidentally modifying them
-    vao1.Unbind();
-    vbo1.Unbind();
-    ebo1.Unbind();
+    VAO1.Unbind();
+    VBO1.Unbind();
+    EBO1.Unbind();
+
+    // Gets ID of uniform called "scale"
+    GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+    std::string parentDir = fs::current_path().string();
+    std::string texPath = "/Resources/";
+
+    std::string fullPath = parentDir + texPath + "crate.png";
+    std::cout << "Loading texture from: " << fullPath << std::endl;
+
+    // Texture
+    Texture crate((parentDir + texPath + "crate.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    crate.texUnit(shaderProgram, "tex0", 0);
 
     // Window loop
     bool loop = true;
@@ -128,8 +145,9 @@ int main() {
 
         // Activate the shader program
         shaderProgram.Activate();
+        crate.Bind();
         // Bind the VAO so OpenGL knows to use it
-        vao1.Bind();
+        VAO1.Bind();
         // Draw primitives, number of indices, datatype of indices, index of indices
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
@@ -137,9 +155,9 @@ int main() {
     }
 
     // Release resources
-    vao1.Delete();
-    vbo1.Delete();
-    ebo1.Delete();
+    VAO1.Delete();
+    VBO1.Delete();
+    EBO1.Delete();
     shaderProgram.Delete();
 
     // SDL Shutdown

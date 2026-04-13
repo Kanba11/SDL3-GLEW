@@ -34,7 +34,7 @@ int main() {
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Quad", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Quad", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
@@ -70,7 +70,7 @@ int main() {
     }
 
     // Set initial viewport
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, 800, 800);
 
     // Stores whether shader compile/program link succeeded
     GLint success;
@@ -124,18 +124,19 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Vertices coordinates
-    GLfloat vertices[] = {
-         0.5f,  0.5f, 0.0f, // Upper right
-         0.5f, -0.5f, 0.0f, // Lower right
-        -0.5f, -0.5f, 0.0f, // Lower left
-        -0.5f,  0.5f, 0.0f  // Upper left
+    // Vertex data
+    GLfloat vertexData[] = {
+    // Position (x, y, z)
+     -0.5f,  -0.5f, 0.0f, // Lower left
+     -0.5f,   0.5f, 0.0f, // Upper left
+      0.5f,   0.5f, 0.0f, // Upper right
+      0.5f,  -0.5f, 0.0f, // Lower right
     };
 
     // Index data for two triangles
     GLuint indices[] = {
-        0, 1, 3, 
-        1, 2, 3  
+        0, 2, 1, 
+        0, 3, 2 
     };
 
     // Create VAO, VBO, and EBO handles
@@ -151,7 +152,7 @@ int main() {
     // Bind VBO as the current array buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Upload vertex data to VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
     // Bind the EBO specifying it's a GL_ELEMENT_ARRAY_BUFFER
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -178,7 +179,12 @@ int main() {
             // Exit if the Escape key is pressed
             if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE) loop = false;
             // Window resizing
-            if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
+            if (e.type == SDL_EVENT_WINDOW_RESIZED) { 
+                int w = e.window.data1;
+                int h = e.window.data2;
+                int s = (w < h) ? w : h;
+                glViewport((w - s) / 2, (h - s) / 2, s, s);
+            }
         }
         
         // Specify background color

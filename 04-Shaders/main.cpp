@@ -38,7 +38,7 @@ int main() {
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Shaders", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Shaders", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
@@ -74,7 +74,7 @@ int main() {
     }
 
     // Set initial viewport
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, 800, 800);
 
     // Stores whether shader compile/program link succeeded
     GLint success;
@@ -131,11 +131,11 @@ int main() {
     // Vertex and RGB data 
     GLfloat vertexData[] = {
     // Position (x, y, z)   // Color (r, g, b)
-     0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Upper right (red)
-     0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Lower right (green)
-    -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Lower left (blue)
-    -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Upper left (yellow)
-};
+        -0.5f,  -0.5f, 0.0f,    1.0f, 0.0f, 0.0f, // Lower left
+        -0.5f,   0.5f, 0.0f,    0.0f, 1.0f, 0.0f, // Upper left
+         0.5f,   0.5f, 0.0f,    0.0f, 0.0f, 1.0f, // Upper right
+         0.5f,  -0.5f, 0.0f,    1.0f, 1.0f, 0.0f  // Lower right
+    };
 
     // Index data for two triangles
     GLuint indices[] = {
@@ -186,7 +186,12 @@ int main() {
             // Exit if the Escape key is pressed
             if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE) loop = false;
             // Window resizing
-            if (e.type == SDL_EVENT_WINDOW_RESIZED) glViewport(0, 0, e.window.data1, e.window.data2);
+            if (e.type == SDL_EVENT_WINDOW_RESIZED) {
+                int w = e.window.data1;
+                int h = e.window.data2;
+                int s = (w < h) ? w : h;
+                glViewport((w - s) / 2, (h - s) / 2, s, s);
+            }
         }
 
         // Specify background color
