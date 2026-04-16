@@ -2,7 +2,7 @@
 #define TEXTURE_CLASS_H
 
 #include<GL/glew.h>
-#include<stb_image.h>
+#include"stb_image.h"
 
 #include"shaderClass.h"
 
