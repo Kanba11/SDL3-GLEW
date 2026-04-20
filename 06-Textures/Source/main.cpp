@@ -44,7 +44,7 @@ int main() {
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Organizing", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Textures", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();

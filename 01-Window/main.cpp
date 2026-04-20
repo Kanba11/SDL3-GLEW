@@ -19,7 +19,7 @@ int main() {
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Window", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Window", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
@@ -55,7 +55,7 @@ int main() {
     }
 
     // Set initial viewport
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, 800, 800);
 
     // Window loop
     bool loop = true;
