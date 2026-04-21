@@ -13,6 +13,7 @@ namespace fs = std::filesystem;
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
+#include "Camera.h"
 
     // Specify screen size
     const unsigned int width = 800;
@@ -107,6 +108,8 @@ namespace fs = std::filesystem;
         return -1;
     }
 
+    SDL_GL_SetSwapInterval(1);
+
     // Drawing a context
     if (!SDL_GL_MakeCurrent(window, glContext)) {
         std::cerr << "Failed to make context current: " << SDL_GetError() << "\n";
@@ -165,8 +168,7 @@ namespace fs = std::filesystem;
 
     glEnable(GL_DEPTH_TEST);
 
-    Uint64 prevTime = SDL_GetTicks();
-    float rotation = 0.0f;
+    Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
     // Window loop
     bool loop = true;
@@ -187,41 +189,18 @@ namespace fs = std::filesystem;
             }
         }
 
-        // Simple timer
-        Uint64 crntTime = SDL_GetTicks();
-        if (crntTime - prevTime >= 1000 / 60)
-        {
-            rotation += 0.5f;
-            prevTime = crntTime;
-        }
-
-        // Initializes matrices so they are not the null matrix
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 proj = glm::mat4(1.0f);
-
-        // Assigns different transformations to each matrix
-        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        proj = glm::perspective(glm::radians(45.0f), (float)width / height, 0.1f, 100.0f);
-
-        shaderProgram.Activate();
-
-        // Outputs the matrices into the Vertex Shader
-        int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-
-        // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
-        glUniform1f(uniID, 0.5f);
-
         // Specify background color
         glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
         // Clean the back buffer and assign a new color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Tell OpenGL which Shader Program we want to use
+	shaderProgram.Activate();
+
+	// Handles camera inputs
+	camera.Inputs(window);
+	// Updates and exports the camera matrix to the Vertex Shader
+	camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
         // Activate the shader program
         crate.Bind();
