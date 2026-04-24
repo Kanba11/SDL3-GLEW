@@ -19,44 +19,44 @@ namespace fs = std::filesystem;
     const unsigned int width = 800;
     const unsigned int height = 800;
 
-
-    // Vertex and RGB data
+    // Vertex, RGB, Texture, and Normal data
     GLfloat vertexData[] = {
+    // Position            // Color             // TexCoords  // Normals (面の向き)
     // Bottom face (y = -0.5f)
-    -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   0.0f, -1.0f,  0.0f,
 
     // Top face (y = 0.5f)
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   0.0f,  1.0f,  0.0f,
 
     // Front face (z = 0.5f)
-    -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   0.0f,  0.0f,  1.0f,
 
     // Back face (z = -0.5f)
-    -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   0.0f,  0.0f, -1.0f,
 
     // Left face (x = -0.5f)
-    -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,  -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,  -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,  -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,  -1.0f,  0.0f,  0.0f,
 
     // Right face (x = 0.5f)
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f
+     0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   1.0f,  0.0f,  0.0f
     };
 
     GLuint indices[] = {
@@ -72,6 +72,33 @@ namespace fs = std::filesystem;
     16, 18, 17,  16, 19, 18,
     // Right
     20, 21, 22,  20, 22, 23
+    };
+
+    GLfloat lightVertices[] = { 
+        //     COORDINATES     //
+        -0.1f, -0.1f,  0.1f,
+        -0.1f, -0.1f, -0.1f,
+         0.1f, -0.1f, -0.1f,
+         0.1f, -0.1f,  0.1f,
+        -0.1f,  0.1f,  0.1f,
+        -0.1f,  0.1f, -0.1f,
+         0.1f,  0.1f, -0.1f,
+         0.1f,  0.1f,  0.1f
+    };
+
+    GLuint lightIndices[] = {
+        0, 1, 2,
+        0, 2, 3,
+        0, 4, 7,
+        0, 7, 3,
+        3, 7, 6,
+        3, 6, 2,
+        2, 6, 5,
+        2, 5, 1,
+        1, 5, 4,
+        1, 4, 0,
+        4, 5, 6,
+        4, 6, 7
     };
 
     int main() {
@@ -92,7 +119,7 @@ namespace fs = std::filesystem;
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Camera", width, height, SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("Lighting", width, height, SDL_WINDOW_OPENGL);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
@@ -144,17 +171,53 @@ namespace fs = std::filesystem;
     // Generates EBO and links it to indices
     EBO EBO1(indices, sizeof(indices));
 
-    
-    // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-    // Configure vertex color attribute (location = 1)
-    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    // Position (Location 0)
+    VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
+    // Color (Location 1)
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+    // Texture (Location 2)
+    VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+    // Normals (Location 3)
+    VAO1.LinkAttrib(VBO1, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 
     // Unbind all to prevent accidentally modifying them
     VAO1.Unbind();
     VBO1.Unbind();
     EBO1.Unbind();
+
+    // Shader for light cube
+    Shader lightShader("Shaders/light.vert", "Shaders/light.frag");
+    // Generates Vertex Array Object and binds it
+    VAO lightVAO;
+    lightVAO.Bind();
+    // Generates Vertex Buffer Object and links it to vertices
+    VBO lightVBO(lightVertices, sizeof(lightVertices));
+    // Generates Element Buffer Object and links it to indices
+    EBO lightEBO(lightIndices, sizeof(lightIndices));
+    // Links VBO attributes such as coordinates and colors to VAO
+    lightVAO.LinkAttrib(lightVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+    // Unbind all to prevent accidentally modifying them
+    lightVAO.Unbind();
+    lightVBO.Unbind();
+    lightEBO.Unbind();
+
+    glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::mat4 lightModel = glm::mat4(1.0f);
+    lightModel = glm::translate(lightModel, lightPos);
+
+    glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::mat4 pyramidModel = glm::mat4(1.0f);
+    pyramidModel = glm::translate(pyramidModel, pyramidPos);
+
+
+    lightShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+    glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    shaderProgram.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
+    glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
     // Gets ID of uniform called "scale"
     GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
@@ -196,17 +259,20 @@ namespace fs = std::filesystem;
 
         // Tell OpenGL which Shader Program we want to use
 	shaderProgram.Activate();
-
 	// Handles camera inputs
 	camera.Inputs(window);
 	// Updates and exports the camera matrix to the Vertex Shader
 	camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
-
         // Activate the shader program
         crate.Bind();
         // Bind the VAO so OpenGL knows to use it
         VAO1.Bind();
         // Draw primitives, number of indices, datatype of indices, index of indices
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        lightShader.Activate();
+        camera.Matrix(45.0f, 0.1f, 100.0f, lightShader, "camMatrix"); 
+        lightVAO.Bind();
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
         SDL_GL_SwapWindow(window);
@@ -218,6 +284,10 @@ namespace fs = std::filesystem;
     EBO1.Delete();
     crate.Delete();
     shaderProgram.Delete();
+    lightVAO.Delete();
+    lightVBO.Delete();
+    lightEBO.Delete();
+    lightShader.Delete();
 
     // SDL Shutdown
     SDL_GL_DestroyContext(glContext);

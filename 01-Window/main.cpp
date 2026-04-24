@@ -19,7 +19,7 @@ int main() {
 #endif
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Window", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Window", 800, 800, SDL_WINDOW_OPENGL);
     if (!window) {
         std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
         SDL_Quit();
@@ -72,7 +72,7 @@ int main() {
         }
 
         // Specify background color
-        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         // Clean the back buffer and assign a new color
         glClear(GL_COLOR_BUFFER_BIT);
         // Swap the back buffer with the front buffer
