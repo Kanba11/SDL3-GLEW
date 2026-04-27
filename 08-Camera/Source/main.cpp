@@ -168,7 +168,7 @@ namespace fs = std::filesystem;
 
     glEnable(GL_DEPTH_TEST);
 
-    Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+    Camera camera(width, height, glm::vec3(0.8f, 0.8f, 4.0f));
 
     // Window loop
     bool loop = true;
